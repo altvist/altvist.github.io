@@ -1,2 +1,3 @@
-# altvist.github.io
-Personal blog (GitHub Pages)
+# https:// altvi.st
+
+My personal blog on GitHub Pages
