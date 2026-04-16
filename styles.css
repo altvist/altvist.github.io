@@ -1,0 +1,576 @@
+@charset "UTF-8";
+/*
+    Typography defaults:
+
+    --font-size: clamp(1.0625rem, 1.0341rem + 0.0909vw, 1.125rem)
+        Font size and the value of 1rem. Use rem/em (the only
+        exception is `--katex-font-scale`)
+
+    --font-family: "IBM Plex Sans", sans-serif
+        Font family of text, metadata, and headers
+
+    --font-weight: 410
+        Font weight of text and metadata
+
+    --line-height: 1.5
+        Lline height of text content
+
+    --header-weight: 680
+        Weight of headers, `.article-title`, and `strong` text
+
+    --meta-font-size: .9rem
+        `.meta` font size
+
+    --code-font-family: "JetBrains Mono", monospace
+        Code font family
+
+    --code-font-weight: 400
+        Code font weight
+
+    --code-bold-font-weight: 780
+        Font weight for `code` inside a header
+
+    --code-in-header-color: #333
+        Code color inside a header
+
+    --code-font-size: .93em
+        Font size of `code` and `pre`
+
+    --code-font-weight: 400
+        Weight of code (outside a header)
+
+    --code-font-variations: no-common-ligatures no-discretionary-ligatures no-historical-ligatures no-contextual
+        Code font variations (by default, for JetBrains Mono)
+
+    --katex-bold-weight: 780
+        Font weight for KaTeX equations inside bold blocks (headers, `.article-title`, `strong`)
+
+    --katex-font-weight: 350
+        Font weight for KaTeX equations outside bold blocks (headers, `.article-title`, `strong`)
+
+    --katex-font-scale: 1.2em
+        Font scale for KaTeX equations
+
+    --topbar-logo-font-weight: 680
+    --topbar-text-font-weight: 410
+    --topbar-logo-font-size: 1rem
+        Topbar logo/text weight
+
+    Color defaults:
+
+    --text-color: #555
+        Color of a reguilar text and math formulas
+
+    --meta-color: #999
+        Metadata color
+
+    --background-color: #fff
+        Background color (whole `.typography` block)
+
+    --header-color: #333
+        Header color
+
+    --code-color: #494949
+    --code-background-color: #f0f0f0
+    --code-frame: 1px solid #e0e0e0
+    --code-in-header-color: #333
+        Code text/frame/background color
+
+    --link-color: #F87B1B
+    --link-hover-color: #fb4f14
+        Link colors
+
+    --quote-frame: 1px solid #e0e0e0
+    --quote-background: #f0f0f0
+    --quote-color: #494949
+        Quote
+
+    --list-marker-color: #333
+        List markers color
+
+    --info-color: #fff
+    --info-background: #408A71
+        [INFO] marker color and background
+
+    --warning-color: #fff
+    --warning-background: #E76F2E
+        [WARNING!] marker color and background
+
+    --danger-color: #fff
+    --danger-background: #C44A3A
+        [DANGER!] marker color and background
+
+    --topbar-background-color: #fff
+    --topbar-frame: none
+    --topbar-shadow: 0px .15rem .5rem #ddd
+    --topbar-link-color: #F87B1B
+    --topbar-link-hover-color: #ffa968
+    --topbar-external-link-icon-color: #999
+    --topbar-svg-logo-height: 2rem
+    --topbar-img-logo-height: 2.3rem
+    --topbar-img-logo-background: rgba(0, 0, 0, 0)
+        Topbar background, frame, shadow etc.
+
+    Classes inside `article`:
+
+    `.article-title`
+        The main title of an article (`h1`, `h2`, `h3` etc are sections, subsections, 
+        sub-subsections etc), use as `<div class="article-title">...</div>`.
+
+    `.meta`
+        Metadata, e.g. the date/time of publication, use as `<div class="meta">...</div>`
+        or `<p class="meta">...</p>`.
+
+*/
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&family=JetBrains+Mono:wght@100..800&display=swap");
+:root,
+[data-theme=light] {
+  --text-color: #5a5a5a;
+  --meta-color: #999;
+  --background-color: #fff;
+  --header-color: #53937e;
+  --code-color: #494949;
+  --code-background-color: #f0f0f0;
+  --code-frame: 1px solid #e0e0e0;
+  --code-in-header-color: #53937e;
+  --link-color: #f2713f;
+  --link-hover-color: #dc3e00;
+  --quote-frame: 1px solid #e0e0e0;
+  --quote-background: #f0f0f0;
+  --quote-color: #494949;
+  --list-marker-color: #53937e;
+  --info-color: #fff;
+  --info-background: #408A71;
+  --warning-color: #fff;
+  --warning-background: #E76F2E;
+  --danger-color: #fff;
+  --danger-background: #C44A3A;
+  --topbar-background-color: #4E8975;
+  --topbar-frame: none;
+  --topbar-shadow: none;
+  --topbar-link-color: #fff;
+  --topbar-link-hover-color: #fff;
+  --topbar-external-link-icon-color: #eee;
+  --topbar-text-font-weight: 500;
+  --topbar-logo-font-size: 1.1rem;
+}
+
+[data-theme=dark] {
+  --text-color: #bbb;
+  --font-weight: 350;
+  --meta-color: #999;
+  --background-color: #191919;
+  --header-color: #53b393;
+  --header-weight: 600;
+  --code-color: #d1d7e0;
+  --code-background-color: #252525;
+  --code-frame: 1px solid #333;
+  --code-in-header-color: #53b393;
+  --code-font-weight: 280;
+  --code-bold-font-weight: 700;
+  --katex-font-weight: 300;
+  --katex-bold-weight: 700;
+  --link-color: #ff9854;
+  --link-hover-color: #ffc49d;
+  --quote-frame: 1px solid #333;
+  --quote-background: #252525;
+  --quote-color: #d1d7e0;
+  --list-marker-color: #53b393;
+  --info-color: #d1d7e0;
+  --info-background: #336e5b;
+  --warning-color: #d1d7e0;
+  --warning-background: #c55f28;
+  --danger-color: #d1d7e0;
+  --danger-background: #a84133;
+  --topbar-background-color: #408A71;
+  --topbar-frame: none;
+  --topbar-shadow: none;
+  --topbar-link-color: #fff;
+  --topbar-link-hover-color: #fff;
+  --topbar-external-link-icon-color: #eee;
+  --topbar-img-logo-height: 2rem;
+  --topbar-text-font-weight: 500;
+  --topbar-logo-font-size: 1.1rem;
+}
+
+html {
+  font-size: var(--font-size, 17.5px);
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  font-family: var(--font-family, "IBM Plex Sans", -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol");
+}
+
+body {
+  font-weight: var(--font-weight, 410);
+  font-size: 1rem;
+  background-color: var(--background-color, #fff);
+}
+
+nav {
+  background-color: var(--topbar-background-color, #fff);
+  border-bottom: var(--topbar-frame, none);
+  box-shadow: var(--topbar-shadow, 0px 0.15rem 0.5rem #ddd);
+  font-weight: var(--topbar-text-font-weight, 410);
+  scrollbar-color: var(--topbar-link-color, #F87B1B) var(--topbar-background-color, #fff);
+}
+nav a {
+  text-decoration: none;
+  color: var(--topbar-link-color, #F87B1B);
+}
+nav a svg.external-link-icon {
+  color: var(--topbar-external-link-icon-color, #999);
+  margin-left: 0.15em;
+}
+@media (hover: hover) and (pointer: fine) {
+  nav a:hover {
+    color: var(--topbar-link-hover-color, #fb4f14);
+    cursor: pointer;
+  }
+}
+nav .topbar {
+  background-color: rgba(0, 0, 0, 0);
+}
+nav .topbar .menu {
+  letter-spacing: 0.015em;
+}
+nav .topbar .menu a.logo {
+  font-weight: var(--topbar-logo-font-weight, 680);
+  font-size: var(--topbar-logo-font-size, 1rem);
+}
+nav .topbar .menu a.logo svg {
+  height: var(--topbar-svg-logo-height, 2rem);
+  margin-right: 0.5em;
+}
+nav .topbar .menu a.logo img {
+  height: var(--topbar-img-logo-height, 2rem);
+  width: var(--topbar-img-logo-height, 2rem);
+  margin-right: 0.5em;
+  border-radius: 50%;
+  background-color: var(--topbar-img-logo-background, rgba(0, 0, 0, 0));
+}
+nav .topbar .buttons svg {
+  max-height: 1.5rem;
+}
+
+article {
+  line-height: var(--line-height, 1.5);
+  color: var(--text-color, #555);
+  font-optical-sizing: auto;
+}
+article .article-title,
+article h1,
+article h2,
+article h3,
+article h4,
+article h5,
+article h6 {
+  font-weight: var(--header-weight, 680);
+  color: var(--header-color, #333);
+}
+article .article-title code,
+article h1 code,
+article h2 code,
+article h3 code,
+article h4 code,
+article h5 code,
+article h6 code {
+  font-weight: var(--code-bold-font-weight, 780);
+  color: var(--code-in-header-color, #333);
+}
+article .article-title .katex,
+article h1 .katex,
+article h2 .katex,
+article h3 .katex,
+article h4 .katex,
+article h5 .katex,
+article h6 .katex {
+  font-weight: var(--katex-bold-weight, 780);
+}
+article .article-title {
+  font-size: 1.8rem;
+  margin: 1rem 0;
+}
+article h1 {
+  font-size: 1.6rem;
+}
+article h2 {
+  font-size: 1.4rem;
+}
+article h3 {
+  font-size: 1.2rem;
+}
+article h4,
+article h5,
+article h6 {
+  font-size: 1rem;
+}
+article .header-wrapper {
+  display: flex;
+  align-items: baseline;
+}
+article strong code {
+  font-weight: var(--code-bold-font-weight, 780);
+  color: var(--code-color, #494949);
+}
+article strong .katex {
+  font-weight: var(--katex-bold-weight, 780);
+}
+article .meta {
+  font-size: var(--meta-font-size, 0.9rem);
+  color: var(--meta-color, #999);
+  margin: 1rem 0;
+}
+article strong {
+  font-weight: var(--header-weight, 680);
+}
+article pre,
+article code {
+  font-family: var(--code-font-family, "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol");
+  font-size: var(--code-font-size, 0.93em);
+  font-weight: var(--code-font-weight, 400);
+  color: var(--code-color, #494949);
+  border-radius: 0.1em;
+  background-color: var(--code-background-color, #f0f0f0);
+  border: var(--code-frame, 1px solid #e0e0e0);
+  font-variant: var(--code-font-variations, no-common-ligatures no-discretionary-ligatures no-historical-ligatures no-contextual);
+}
+article code {
+  padding: 0 0.2em;
+}
+article pre {
+  overflow-x: auto;
+  padding: 1rem;
+}
+article pre code {
+  border: none;
+  background-color: none;
+  font-size: 1em;
+  padding: 0;
+}
+article > * img {
+  display: inline;
+  max-height: 1em;
+  vertical-align: middle;
+}
+article > img {
+  display: block;
+  margin: 1rem auto;
+  max-width: 100%;
+}
+article a {
+  text-decoration: none;
+}
+article a svg.external-link-icon {
+  color: var(--external-link-icon-color, #999);
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 0.15em;
+  margin-bottom: 0.1em;
+}
+article a,
+article a code {
+  color: var(--link-color, #F87B1B);
+}
+@media (hover: hover) and (pointer: fine) {
+  article a:hover,
+  article a:hover code {
+    color: var(--link-hover-color, #fb4f14);
+  }
+}
+article .katex {
+  font-weight: var(--katex-font-weight, 350);
+  font-size: calc(var(--katex-font-scale, 1.2) * 1em);
+}
+article .katex .text {
+  font-family: var(--font-family, "IBM Plex Sans", -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol");
+  font-size: calc(1 / var(--katex-font-scale, 1.2) * 1em);
+  font-weight: var(--font-weight, 410);
+}
+article .katex-display {
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+article blockquote {
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0.5rem 1rem;
+  border: var(--quote-frame, 1px solid #e0e0e0);
+  background-color: var(--quote-background, #f9f9f9);
+  color: var(--quote-color, #494949);
+  border-radius: 0.1rem;
+}
+article blockquote.alert-warning, article blockquote.alert-important {
+  border: 1px solid var(--warning-background, #e76f2e);
+  border-radius: 0.1em;
+  padding: 0;
+}
+article blockquote.alert-warning .alert-type, article blockquote.alert-important .alert-type {
+  color: var(--warning-color, #fff);
+  background-color: var(--warning-background, #e76f2e);
+  padding: 0.5rem 1rem;
+  font-weight: var(--header-weight, 600);
+}
+article blockquote.alert-warning > *, article blockquote.alert-important > * {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+article blockquote.alert-caution {
+  border: 1px solid var(--danger-background, #c44a3a);
+  border-radius: 0.1em;
+  padding: 0;
+}
+article blockquote.alert-caution .alert-type {
+  color: var(--danger-color, #fff);
+  background-color: var(--danger-background, #c44a3a);
+  padding: 0.5rem 1rem;
+  font-weight: var(--header-weight, 600);
+}
+article blockquote.alert-caution > * {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+article blockquote.alert-note, article blockquote.alert-tip {
+  border: 1px solid var(--info-background, #408a71);
+  border-radius: 0.1em;
+  padding: 0;
+}
+article blockquote.alert-note .alert-type, article blockquote.alert-tip .alert-type {
+  color: var(--info-color, #fff);
+  background-color: var(--info-background, #408a71);
+  padding: 0.5rem 1rem;
+  font-weight: var(--header-weight, 600);
+}
+article blockquote.alert-note > *, article blockquote.alert-tip > * {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+article ul {
+  list-style-type: square;
+}
+article ol li::marker,
+article ul li::marker {
+  color: var(--list-marker-color, #333);
+}
+article .heading-anchor {
+  padding: 0 0.2em;
+}
+article #toc h1 a {
+  display: auto;
+  padding-left: 0.2em;
+}
+article #toc ul a {
+  display: block;
+}
+article hr {
+  border: 0;
+  border-top: 1px solid var(--meta-color, #999);
+  margin-top: 2rem;
+}
+article .meta-inline {
+  color: var(--meta-color, #999);
+  font-size: var(--meta-font-size, 0.9rem);
+}
+article .blog-post-list .blog-post {
+  margin-top: 0.5rem;
+}
+article .blog-post-list .blog-post a, article .blog-post-list .blog-post .meta-inline {
+  display: block;
+}
+article .blog-post-list .blog-post:first-child {
+  margin-top: 0;
+}
+article .prev_next {
+  display: flex;
+  gap: 1rem;
+}
+article .prev_next > * {
+  width: 100%;
+}
+article .prev_next > * > * {
+  display: block;
+}
+article .prev_next .next {
+  text-align: right;
+}
+article .tail {
+  white-space: nowrap;
+}
+article .tail::before {
+  content: "​";
+}
+article .hide-on-widescreen {
+  display: none;
+}
+@media only screen and (max-width: 600px) {
+  article .hide-on-widescreen {
+    display: block;
+  }
+}
+
+/*
+    Topbar defaults
+*/
+html, body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  display: flex;
+  justify-content: space-around;
+  z-index: 1000;
+}
+nav .topbar {
+  width: 56rem;
+  min-width: max-content;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 3rem;
+  white-space: nowrap;
+}
+nav .topbar * {
+  display: flex;
+  align-items: center;
+  height: 3rem;
+}
+nav .topbar .logo a {
+  padding: 0 0.5rem 0 1rem;
+}
+nav .topbar .menu a {
+  padding: 0 0.5rem;
+}
+nav .topbar .menu a.logo {
+  padding: 0 0.5rem 0 1rem;
+}
+nav .topbar .buttons > * {
+  padding: 0 0.5rem;
+}
+nav .topbar .buttons > *:last-child {
+  padding-right: 1rem;
+}
+
+article {
+  max-width: 49rem;
+  margin: 4.5rem auto 0 auto;
+  padding: 0 1rem;
+}
+article h1[id], article h2[id], article h3[id], article h4[id], article h5[id], article h6[id] {
+  scroll-margin-top: 4rem;
+}
+article .katex {
+  z-index: 9999;
+}
+article .nowrap {
+  white-space: nowrap;
+}
+
+/*# sourceMappingURL=styles.css.map */
