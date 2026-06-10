@@ -1,576 +1,521 @@
 @charset "UTF-8";
-/*
-    Typography defaults:
-
-    --font-size: clamp(1.0625rem, 1.0341rem + 0.0909vw, 1.125rem)
-        Font size and the value of 1rem. Use rem/em (the only
-        exception is `--katex-font-scale`)
-
-    --font-family: "IBM Plex Sans", sans-serif
-        Font family of text, metadata, and headers
-
-    --font-weight: 410
-        Font weight of text and metadata
-
-    --line-height: 1.5
-        Lline height of text content
-
-    --header-weight: 680
-        Weight of headers, `.article-title`, and `strong` text
-
-    --meta-font-size: .9rem
-        `.meta` font size
-
-    --code-font-family: "JetBrains Mono", monospace
-        Code font family
-
-    --code-font-weight: 400
-        Code font weight
-
-    --code-bold-font-weight: 780
-        Font weight for `code` inside a header
-
-    --code-in-header-color: #333
-        Code color inside a header
-
-    --code-font-size: .93em
-        Font size of `code` and `pre`
-
-    --code-font-weight: 400
-        Weight of code (outside a header)
-
-    --code-font-variations: no-common-ligatures no-discretionary-ligatures no-historical-ligatures no-contextual
-        Code font variations (by default, for JetBrains Mono)
-
-    --katex-bold-weight: 780
-        Font weight for KaTeX equations inside bold blocks (headers, `.article-title`, `strong`)
-
-    --katex-font-weight: 350
-        Font weight for KaTeX equations outside bold blocks (headers, `.article-title`, `strong`)
-
-    --katex-font-scale: 1.2em
-        Font scale for KaTeX equations
-
-    --topbar-logo-font-weight: 680
-    --topbar-text-font-weight: 410
-    --topbar-logo-font-size: 1rem
-        Topbar logo/text weight
-
-    Color defaults:
-
-    --text-color: #555
-        Color of a reguilar text and math formulas
-
-    --meta-color: #999
-        Metadata color
-
-    --background-color: #fff
-        Background color (whole `.typography` block)
-
-    --header-color: #333
-        Header color
-
-    --code-color: #494949
-    --code-background-color: #f0f0f0
-    --code-frame: 1px solid #e0e0e0
-    --code-in-header-color: #333
-        Code text/frame/background color
-
-    --link-color: #F87B1B
-    --link-hover-color: #fb4f14
-        Link colors
-
-    --quote-frame: 1px solid #e0e0e0
-    --quote-background: #f0f0f0
-    --quote-color: #494949
-        Quote
-
-    --list-marker-color: #333
-        List markers color
-
-    --info-color: #fff
-    --info-background: #408A71
-        [INFO] marker color and background
-
-    --warning-color: #fff
-    --warning-background: #E76F2E
-        [WARNING!] marker color and background
-
-    --danger-color: #fff
-    --danger-background: #C44A3A
-        [DANGER!] marker color and background
-
-    --topbar-background-color: #fff
-    --topbar-frame: none
-    --topbar-shadow: 0px .15rem .5rem #ddd
-    --topbar-link-color: #F87B1B
-    --topbar-link-hover-color: #ffa968
-    --topbar-external-link-icon-color: #999
-    --topbar-svg-logo-height: 2rem
-    --topbar-img-logo-height: 2.3rem
-    --topbar-img-logo-background: rgba(0, 0, 0, 0)
-        Topbar background, frame, shadow etc.
-
-    Classes inside `article`:
-
-    `.article-title`
-        The main title of an article (`h1`, `h2`, `h3` etc are sections, subsections, 
-        sub-subsections etc), use as `<div class="article-title">...</div>`.
-
-    `.meta`
-        Metadata, e.g. the date/time of publication, use as `<div class="meta">...</div>`
-        or `<p class="meta">...</p>`.
-
-*/
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&family=JetBrains+Mono:wght@100..800&display=swap");
-:root,
-[data-theme=light] {
-  --text-color: #5a5a5a;
-  --meta-color: #999;
-  --background-color: #fff;
-  --header-color: #53937e;
-  --code-color: #494949;
-  --code-background-color: #f0f0f0;
-  --code-frame: 1px solid #e0e0e0;
-  --code-in-header-color: #53937e;
-  --link-color: #f2713f;
-  --link-hover-color: #dc3e00;
-  --quote-frame: 1px solid #e0e0e0;
-  --quote-background: #f0f0f0;
-  --quote-color: #494949;
-  --list-marker-color: #53937e;
-  --info-color: #fff;
-  --info-background: #408A71;
-  --warning-color: #fff;
-  --warning-background: #E76F2E;
-  --danger-color: #fff;
-  --danger-background: #C44A3A;
-  --topbar-background-color: #4E8975;
-  --topbar-frame: none;
-  --topbar-shadow: none;
-  --topbar-link-color: #fff;
-  --topbar-link-hover-color: #fff;
-  --topbar-external-link-icon-color: #eee;
-  --topbar-text-font-weight: 500;
-  --topbar-logo-font-size: 1.1rem;
+:root, [data-theme=light] {
+  --page-bg: #fff;
+  --text-cl: #36454F;
+  --header-cl: #222;
+  --frame-cl: #ddd;
+  --menu-bg: #fff;
+  --menu-cl: #222;
+  --menu-link-cl: #099;
+  --menu-link-hover-cl: #f47721;
+  --menu-frame: 1px solid #ddd;
+  --dimmed-bg: rgba(0, 0, 0, 0.3);
+  --main-font: "Source Sans 3", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --main-font-weight: 400;
+  --bold-font-weight: 620;
+  --bold-font-weight-katex: 550;
+  --link-cl: #099;
+  --link-hover-cl: #f47721;
+  --code-font-weight: 400;
+  --bold-font-weight-code: 710;
+  --code-bg: #f7f7f7;
+  --code-frame: 1px solid var(--frame-cl);
+  --code-font: "JetBrains Mono", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --code-ligatures: none;
+  --meta-cl: #999;
 }
 
 [data-theme=dark] {
-  --text-color: #bbb;
-  --font-weight: 350;
-  --meta-color: #999;
-  --background-color: #191919;
-  --header-color: #53b393;
-  --header-weight: 600;
-  --code-color: #d1d7e0;
-  --code-background-color: #252525;
-  --code-frame: 1px solid #333;
-  --code-in-header-color: #53b393;
-  --code-font-weight: 280;
-  --code-bold-font-weight: 700;
-  --katex-font-weight: 300;
-  --katex-bold-weight: 700;
-  --link-color: #ff9854;
-  --link-hover-color: #ffc49d;
-  --quote-frame: 1px solid #333;
-  --quote-background: #252525;
-  --quote-color: #d1d7e0;
-  --list-marker-color: #53b393;
-  --info-color: #d1d7e0;
-  --info-background: #336e5b;
-  --warning-color: #d1d7e0;
-  --warning-background: #c55f28;
-  --danger-color: #d1d7e0;
-  --danger-background: #a84133;
-  --topbar-background-color: #408A71;
-  --topbar-frame: none;
-  --topbar-shadow: none;
-  --topbar-link-color: #fff;
-  --topbar-link-hover-color: #fff;
-  --topbar-external-link-icon-color: #eee;
-  --topbar-img-logo-height: 2rem;
-  --topbar-text-font-weight: 500;
-  --topbar-logo-font-size: 1.1rem;
+  --page-bg: #1c1c1c;
+  --text-cl: #bbb;
+  --header-cl: #ddd;
+  --frame-cl: #333;
+  --menu-bg: #282828;
+  --menu-cl: #fff;
+  --menu-link-cl: #56c392;
+  --menu-link-hover-cl: #f89350;
+  --menu-frame: 1px solid #333;
+  --dimmed-bg: rgba(0, 0, 0, 0.8);
+  --main-font: "Source Sans 3", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --main-font-weight: 350;
+  --bold-font-weight: 600;
+  --bold-font-weight-katex: 550;
+  --link-cl: #56c392;
+  --link-hover-cl: #f89350;
+  --code-font-weight: 290;
+  --bold-font-weight-code: 680;
+  --code-bg: #282828;
+  --code-frame: 1px solid var(--frame-cl);
+  --code-font: "JetBrains Mono", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --code-ligatures: none;
+  --meta-cl: #777;
 }
 
 html {
-  font-size: var(--font-size, 17.5px);
+  font-size: 18.7px;
   text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
-  font-family: var(--font-family, "IBM Plex Sans", -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol");
+  scroll-behavior: smooth;
 }
 
 body {
-  font-weight: var(--font-weight, 410);
-  font-size: 1rem;
-  background-color: var(--background-color, #fff);
-}
-
-nav {
-  background-color: var(--topbar-background-color, #fff);
-  border-bottom: var(--topbar-frame, none);
-  box-shadow: var(--topbar-shadow, 0px 0.15rem 0.5rem #ddd);
-  font-weight: var(--topbar-text-font-weight, 410);
-  scrollbar-color: var(--topbar-link-color, #F87B1B) var(--topbar-background-color, #fff);
-}
-nav a {
-  text-decoration: none;
-  color: var(--topbar-link-color, #F87B1B);
-}
-nav a svg.external-link-icon {
-  color: var(--topbar-external-link-icon-color, #999);
-  margin-left: 0.15em;
-}
-@media (hover: hover) and (pointer: fine) {
-  nav a:hover {
-    color: var(--topbar-link-hover-color, #fb4f14);
-    cursor: pointer;
-  }
-}
-nav .topbar {
-  background-color: rgba(0, 0, 0, 0);
-}
-nav .topbar .menu {
-  letter-spacing: 0.015em;
-}
-nav .topbar .menu a.logo {
-  font-weight: var(--topbar-logo-font-weight, 680);
-  font-size: var(--topbar-logo-font-size, 1rem);
-}
-nav .topbar .menu a.logo svg {
-  height: var(--topbar-svg-logo-height, 2rem);
-  margin-right: 0.5em;
-}
-nav .topbar .menu a.logo img {
-  height: var(--topbar-img-logo-height, 2rem);
-  width: var(--topbar-img-logo-height, 2rem);
-  margin-right: 0.5em;
-  border-radius: 50%;
-  background-color: var(--topbar-img-logo-background, rgba(0, 0, 0, 0));
-}
-nav .topbar .buttons svg {
-  max-height: 1.5rem;
-}
-
-article {
-  line-height: var(--line-height, 1.5);
-  color: var(--text-color, #555);
+  background-color: var(--page-bg);
+  color: var(--text-cl);
+  font-family: var(--main-font);
+  line-height: 1.5;
   font-optical-sizing: auto;
+  font-weight: var(--main-font-weight);
 }
-article .article-title,
-article h1,
-article h2,
-article h3,
-article h4,
-article h5,
-article h6 {
-  font-weight: var(--header-weight, 680);
-  color: var(--header-color, #333);
+
+.smooth-fonts {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-article .article-title code,
-article h1 code,
-article h2 code,
-article h3 code,
-article h4 code,
-article h5 code,
-article h6 code {
-  font-weight: var(--code-bold-font-weight, 780);
-  color: var(--code-in-header-color, #333);
+
+.typography {
+  min-width: 0;
 }
-article .article-title .katex,
-article h1 .katex,
-article h2 .katex,
-article h3 .katex,
-article h4 .katex,
-article h5 .katex,
-article h6 .katex {
-  font-weight: var(--katex-bold-weight, 780);
+.typography .title, .typography h1, .typography h2, .typography h3, .typography h4, .typography h5, .typography h6, .typography strong, .typography th {
+  font-weight: var(--bold-font-weight);
+  color: var(--header-cl);
 }
-article .article-title {
-  font-size: 1.8rem;
+.typography .title code, .typography h1 code, .typography h2 code, .typography h3 code, .typography h4 code, .typography h5 code, .typography h6 code, .typography strong code, .typography th code {
+  font-weight: var(--bold-font-weight-code);
+}
+.typography h1[id], .typography h2[id], .typography h3[id], .typography h4[id], .typography h5[id], .typography h6[id] {
+  scroll-margin-top: 4rem;
+}
+.typography .title {
+  font-size: 1.7rem;
   margin: 1rem 0;
 }
-article h1 {
-  font-size: 1.6rem;
+.typography h1 {
+  font-size: 1.5rem;
 }
-article h2 {
-  font-size: 1.4rem;
+.typography h2 {
+  font-size: 1.3rem;
 }
-article h3 {
-  font-size: 1.2rem;
+.typography h3 {
+  font-size: 1.1rem;
 }
-article h4,
-article h5,
-article h6 {
+.typography h4, .typography h5, .typography h6 {
   font-size: 1rem;
 }
-article .header-wrapper {
+.typography .title-wrapper {
+  margin: 4.7rem 0 1.7rem 0;
+}
+.typography .title-wrapper + img {
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+  aspect-ratio: 2/1;
+}
+@media (max-width: 600px) {
+  .typography .title-wrapper + img {
+    aspect-ratio: 4/3;
+  }
+}
+.typography .title-wrapper + img {
+  overflow: hidden;
+  border-radius: 4px;
+}
+.typography .katex-display {
+  display: block;
+  overflow-y: hidden;
+  overflow-x: auto;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+.typography strong .katex, .typography h1 .katex, .typography h2 .katex, .typography h3 .katex, .typography h4 .katex, .typography h5 .katex, .typography h6 .katex, .typography .title .katex, .typography th .katex {
+  font-weight: var(--bold-font-weight-katex);
+}
+.typography .katex {
+  font-size: 1.15em !important;
+}
+.typography .katex .text {
+  font-family: var(--main-font);
+  font-size: 0.8695652174em !important;
+}
+.typography table {
+  border: 1px solid var(--frame-cl);
+  border-spacing: 0;
+  border-radius: 4px;
+  overflow-x: auto;
+  white-space: nowrap;
+  display: block;
+  max-width: -moz-fit-content;
+  max-width: fit-content;
+  margin: 1rem auto;
+}
+.typography table th, .typography table td {
+  padding: 0.5em;
+  border-bottom: 1px solid var(--frame-cl);
+  border-right: 1px solid var(--frame-cl);
+  text-align: left;
+}
+.typography table th {
+  background-color: var(--code-bg);
+}
+.typography table tr th:last-child, .typography table tr td:last-child {
+  border-right: 0;
+}
+.typography table tr:last-child td {
+  border-bottom: 0;
+}
+.typography .footer-line {
+  display: block;
+  height: 0;
+  width: 100%;
+  border-top: 1px solid var(--frame-cl);
+  margin: 1.2rem 0 1rem 0;
+}
+.typography a.heading-anchor {
+  padding: 0 0.2em;
+  text-decoration: none;
+  color: var(--link-cl);
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+.typography a.heading-anchor::before {
+  content: "​";
+}
+@media (hover: hover) and (pointer: fine) {
+  .typography a.heading-anchor:hover {
+    color: var(--link-hover-cl);
+  }
+}
+.typography .header-wrapper {
   display: flex;
   align-items: baseline;
 }
-article strong code {
-  font-weight: var(--code-bold-font-weight, 780);
-  color: var(--code-color, #494949);
+.typography #toc li {
+  padding: 0;
 }
-article strong .katex {
-  font-weight: var(--katex-bold-weight, 780);
+.typography #toc li a {
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
+  display: block;
 }
-article .meta {
-  font-size: var(--meta-font-size, 0.9rem);
-  color: var(--meta-color, #999);
+.typography li {
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
+}
+.typography .post-list {
   margin: 1rem 0;
 }
-article strong {
-  font-weight: var(--header-weight, 680);
-}
-article pre,
-article code {
-  font-family: var(--code-font-family, "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol");
-  font-size: var(--code-font-size, 0.93em);
-  font-weight: var(--code-font-weight, 400);
-  color: var(--code-color, #494949);
-  border-radius: 0.1em;
-  background-color: var(--code-background-color, #f0f0f0);
-  border: var(--code-frame, 1px solid #e0e0e0);
-  font-variant: var(--code-font-variations, no-common-ligatures no-discretionary-ligatures no-historical-ligatures no-contextual);
-}
-article code {
-  padding: 0 0.2em;
-}
-article pre {
-  overflow-x: auto;
-  padding: 1rem;
-}
-article pre code {
-  border: none;
-  background-color: none;
-  font-size: 1em;
-  padding: 0;
-}
-article > * img {
-  display: inline;
-  max-height: 1em;
-  vertical-align: middle;
-}
-article > img {
-  display: block;
-  margin: 1rem auto;
-  max-width: 100%;
-}
-article a {
-  text-decoration: none;
-}
-article a svg.external-link-icon {
-  color: var(--external-link-icon-color, #999);
-  display: inline-block;
-  vertical-align: middle;
-  margin-left: 0.15em;
-  margin-bottom: 0.1em;
-}
-article a,
-article a code {
-  color: var(--link-color, #F87B1B);
-}
-@media (hover: hover) and (pointer: fine) {
-  article a:hover,
-  article a:hover code {
-    color: var(--link-hover-color, #fb4f14);
-  }
-}
-article .katex {
-  font-weight: var(--katex-font-weight, 350);
-  font-size: calc(var(--katex-font-scale, 1.2) * 1em);
-}
-article .katex .text {
-  font-family: var(--font-family, "IBM Plex Sans", -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol");
-  font-size: calc(1 / var(--katex-font-scale, 1.2) * 1em);
-  font-weight: var(--font-weight, 410);
-}
-article .katex-display {
-  overflow-y: hidden;
-  overflow-x: auto;
-}
-article blockquote {
-  margin-left: 0;
-  margin-right: 0;
-  padding: 0.5rem 1rem;
-  border: var(--quote-frame, 1px solid #e0e0e0);
-  background-color: var(--quote-background, #f9f9f9);
-  color: var(--quote-color, #494949);
-  border-radius: 0.1rem;
-}
-article blockquote.alert-warning, article blockquote.alert-important {
-  border: 1px solid var(--warning-background, #e76f2e);
-  border-radius: 0.1em;
-  padding: 0;
-}
-article blockquote.alert-warning .alert-type, article blockquote.alert-important .alert-type {
-  color: var(--warning-color, #fff);
-  background-color: var(--warning-background, #e76f2e);
-  padding: 0.5rem 1rem;
-  font-weight: var(--header-weight, 600);
-}
-article blockquote.alert-warning > *, article blockquote.alert-important > * {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-article blockquote.alert-caution {
-  border: 1px solid var(--danger-background, #c44a3a);
-  border-radius: 0.1em;
-  padding: 0;
-}
-article blockquote.alert-caution .alert-type {
-  color: var(--danger-color, #fff);
-  background-color: var(--danger-background, #c44a3a);
-  padding: 0.5rem 1rem;
-  font-weight: var(--header-weight, 600);
-}
-article blockquote.alert-caution > * {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-article blockquote.alert-note, article blockquote.alert-tip {
-  border: 1px solid var(--info-background, #408a71);
-  border-radius: 0.1em;
-  padding: 0;
-}
-article blockquote.alert-note .alert-type, article blockquote.alert-tip .alert-type {
-  color: var(--info-color, #fff);
-  background-color: var(--info-background, #408a71);
-  padding: 0.5rem 1rem;
-  font-weight: var(--header-weight, 600);
-}
-article blockquote.alert-note > *, article blockquote.alert-tip > * {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-article ul {
-  list-style-type: square;
-}
-article ol li::marker,
-article ul li::marker {
-  color: var(--list-marker-color, #333);
-}
-article .heading-anchor {
-  padding: 0 0.2em;
-}
-article #toc h1 a {
-  display: auto;
-  padding-left: 0.2em;
-}
-article #toc ul a {
-  display: block;
-}
-article hr {
-  border: 0;
-  border-top: 1px solid var(--meta-color, #999);
-  margin-top: 2rem;
-}
-article .meta-inline {
-  color: var(--meta-color, #999);
-  font-size: var(--meta-font-size, 0.9rem);
-}
-article .blog-post-list .blog-post {
-  margin-top: 0.5rem;
-}
-article .blog-post-list .blog-post a, article .blog-post-list .blog-post .meta-inline {
-  display: block;
-}
-article .blog-post-list .blog-post:first-child {
-  margin-top: 0;
-}
-article .prev_next {
+.typography .post-list a.post-item {
   display: flex;
   gap: 1rem;
+  justify-content: space-between;
+  padding: 0.2rem 0;
 }
-article .prev_next > * {
-  width: 100%;
-}
-article .prev_next > * > * {
-  display: block;
-}
-article .prev_next .next {
+.typography .post-list a.post-item .meta {
+  white-space: nowrap;
   text-align: right;
 }
-article .tail {
-  white-space: nowrap;
-}
-article .tail::before {
-  content: "​";
-}
-article .hide-on-widescreen {
-  display: none;
-}
-@media only screen and (max-width: 600px) {
-  article .hide-on-widescreen {
+@media screen and (max-width: 36rem) {
+  .typography .post-list a.post-item {
     display: block;
   }
+  .typography .post-list a.post-item .meta {
+    text-align: left;
+  }
 }
-
-/*
-    Topbar defaults
-*/
-html, body {
-  margin: 0;
+.typography .prev-next-post {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.2rem;
+  margin-bottom: 1.2rem;
+}
+.typography .prev-next-post > a {
+  display: block;
+  width: 50%;
+  padding: 0.5rem 0;
+}
+.typography .prev-next-post > a:only-of-type {
+  width: 100%;
+}
+.typography .prev-next-post a.next-post {
+  text-align: right;
+}
+.typography a {
+  text-decoration: none;
+  color: var(--link-cl);
+}
+@media (hover: hover) and (pointer: fine) {
+  .typography a:hover {
+    color: var(--link-hover-cl);
+  }
+}
+.typography .meta {
+  font-size: 0.95rem;
+  color: var(--meta-cl);
+}
+.typography .external-link-icon {
+  white-space: nowrap;
+  margin-left: 0.07em;
+}
+.typography .external-link-icon::before {
+  content: "​";
+}
+.typography .external-link-icon svg {
+  width: 0.8em;
+  height: 0.8em;
+  color: var(--meta-cl);
+  vertical-align: middle;
+  display: inline-block;
+}
+.typography pre, .typography code {
+  background-color: var(--code-bg);
+  font-weight: var(--code-font-weight);
+  font-family: var(--code-font);
+  font-variant-ligatures: var(--code-ligatures);
+  border: var(--code-frame);
+  border-radius: 4px;
+  font-size: 0.87em;
+}
+.typography code {
+  padding: 0 0.2em;
+}
+.typography pre {
+  overflow-x: auto;
+  padding: 0.7rem;
+}
+.typography pre code {
   padding: 0;
   border: 0;
+  border-radius: 0;
+  font-size: 1em;
+}
+.typography .footer-menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.typography .footer-menu .footer-icons {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+}
+.typography .footer-menu .footer-icons > * {
+  padding: 0.2rem 0.3rem;
+  cursor: pointer;
+  color: var(--link-cl);
+}
+@media (hover: hover) and (pointer: fine) {
+  .typography .footer-menu .footer-icons > *:hover {
+    color: var(--link-hover-cl);
+  }
+}
+.typography .footer-menu .footer-icons > *:last-child {
+  margin-right: -0.2rem;
 }
 
-nav {
+body {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+.topbar-wrapper {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  overflow-x: auto;
-  scrollbar-width: thin;
-  display: flex;
-  justify-content: space-around;
-  z-index: 1000;
+  z-index: 10000;
+  background-color: var(--menu-bg);
+  color: var(--menu-cl);
+  border-bottom: var(--menu-frame);
 }
-nav .topbar {
-  width: 56rem;
-  min-width: max-content;
+.topbar-wrapper .topbar {
+  max-width: 42rem;
   margin: 0 auto;
+  height: 3rem;
+}
+.topbar-wrapper .topbar *, .topbar-wrapper .topbar {
   display: flex;
+  align-items: center;
+}
+.topbar-wrapper .topbar {
   justify-content: space-between;
-  align-items: center;
-  height: 3rem;
-  white-space: nowrap;
 }
-nav .topbar * {
+.topbar-wrapper .topbar .logo a {
+  padding: 0 1rem;
+  font-weight: calc(var(--bold-font-weight) + 100);
+  letter-spacing: 0.01em;
+  color: var(--menu-link-cl);
+}
+@media (hover: hover) and (pointer: fine) {
+  .topbar-wrapper .topbar .logo a:hover {
+    color: var(--menu-link-hover-cl);
+  }
+}
+.topbar-wrapper .topbar .logo a img {
+  height: 2.2rem;
+  width: 2.2rem;
+  object-fit: cover;
+  object-position: center;
+  overflow: hidden;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+.topbar-wrapper .topbar #menu > * {
+  cursor: pointer;
+  color: var(--menu-link-cl);
+}
+@media (hover: hover) and (pointer: fine) {
+  .topbar-wrapper .topbar #menu > *:hover {
+    color: var(--menu-link-hover-cl);
+  }
+}
+.topbar-wrapper .topbar #menu > * {
+  height: 3rem;
+  padding: 0.5rem;
+}
+.topbar-wrapper .topbar #menu > *:first-child {
+  padding-left: 1rem;
+}
+.topbar-wrapper .topbar #menu > *:last-child {
+  padding-right: 1rem;
+}
+@media screen and (max-width: 500px) {
+  .topbar-wrapper .topbar #menu {
+    display: none;
+  }
+}
+.topbar-wrapper .topbar #menu-buttons > * {
+  padding: 0 1rem;
+  cursor: pointer;
+  height: 3rem;
+  color: var(--menu-cl);
+}
+.topbar-wrapper .topbar #menu-buttons {
+  display: none;
+}
+@media screen and (max-width: 500px) {
+  .topbar-wrapper .topbar #menu-buttons {
+    display: flex;
+  }
+  .topbar-wrapper .topbar #menu-buttons #open-menu {
+    display: flex;
+    font-size: 1.3rem;
+  }
+  .topbar-wrapper .topbar #menu-buttons #close-menu {
+    display: none;
+    font-size: 1.5rem;
+  }
+  .topbar-wrapper .topbar #menu-buttons.opened #open-menu {
+    display: none;
+  }
+  .topbar-wrapper .topbar #menu-buttons.opened #close-menu {
+    display: flex;
+  }
+}
+
+#dropdown-menu {
+  opacity: 0;
+  visibility: hidden;
+}
+@media (max-width: 500px) {
+  #dropdown-menu.opened {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+#dropdown-menu {
+  transition: opacity 0.1s ease, visibility 0.1s ease;
+}
+#dropdown-menu, #dropdown-menu * {
   display: flex;
-  align-items: center;
-  height: 3rem;
 }
-nav .topbar .logo a {
-  padding: 0 0.5rem 0 1rem;
+#dropdown-menu {
+  flex-direction: column;
+  position: fixed;
+  top: 3.5rem;
+  right: 0.5rem;
+  z-index: 10000;
+  max-height: calc(100vh - 3rem - 1rem);
+  overflow-y: auto;
+  min-width: 6.5rem;
+  background-color: var(--menu-bg);
+  border-radius: 4px;
+  border: var(--menu-frame);
 }
-nav .topbar .menu a {
-  padding: 0 0.5rem;
+#dropdown-menu > a:first-child {
+  padding-top: 0.7rem;
 }
-nav .topbar .menu a.logo {
-  padding: 0 0.5rem 0 1rem;
+#dropdown-menu > a {
+  padding: 0.3rem 1rem;
+  color: var(--menu-link-cl);
 }
-nav .topbar .buttons > * {
-  padding: 0 0.5rem;
+@media (hover: hover) and (pointer: fine) {
+  #dropdown-menu > a:hover {
+    color: var(--menu-link-hover-cl);
+  }
 }
-nav .topbar .buttons > *:last-child {
+#dropdown-menu .dropdown-menu-icons > * {
+  display: inline;
+  cursor: pointer;
+  color: var(--menu-link-cl);
+}
+@media (hover: hover) and (pointer: fine) {
+  #dropdown-menu .dropdown-menu-icons > *:hover {
+    color: var(--menu-link-hover-cl);
+  }
+}
+#dropdown-menu .dropdown-menu-icons > * {
+  padding: 0.3rem 0.3rem 0.7rem 0.3rem;
+}
+#dropdown-menu .dropdown-menu-icons > *:first-child {
+  padding-left: 1rem;
+}
+#dropdown-menu .dropdown-menu-icons > *:last-child {
   padding-right: 1rem;
 }
 
-article {
-  max-width: 49rem;
-  margin: 4.5rem auto 0 auto;
+.content {
+  max-width: 40rem;
+  margin: 3rem auto 1rem auto;
   padding: 0 1rem;
 }
-article h1[id], article h2[id], article h3[id], article h4[id], article h5[id], article h6[id] {
-  scroll-margin-top: 4rem;
+.content > img {
+  display: block;
+  margin: auto;
+  max-width: 100%;
+  border-radius: 4px;
 }
-article .katex {
-  z-index: 9999;
+
+#dimmed {
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  background-color: var(--dimmed-bg);
+  position: fixed;
+  z-index: 5000;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
-article .nowrap {
-  white-space: nowrap;
+@media screen and (max-width: 500px) {
+  #dimmed.show {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+}
+
+body.frozen {
+  overflow: hidden;
+}
+body.frozen #dropdown-menu {
+  border: 0;
+}
+body.frozen .topbar-wrapper {
+  border: 0;
 }
 
 /*# sourceMappingURL=styles.css.map */

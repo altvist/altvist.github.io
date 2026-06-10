@@ -16,11 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
             setTheme(current === DARK ? LIGHT : DARK);
         }
 
-        // Delegated listener — works for multiple buttons and dynamically added ones
-        document.addEventListener('click', function (e) {
-            if (e.target.closest('.switch-theme-button')) {
+        document.querySelectorAll('.switch-theme-button').forEach( (e) => {
+            e.addEventListener('click', () => {
                 toggleTheme();
-            }
+            });
         });
+
     })();
 });

@@ -2,11 +2,11 @@
  * toc.js
  *
  * On DOMContentLoaded:
- *  1. Finds all article elements.
+ *  1. Finds all `.typography` elements.
  *  2. Inside each, finds all h1–h6 headings.
  *  3. Assigns a unique human-readable id to each heading (with Cyrillic
  *     transliteration) and appends a clickable «#» anchor at the end.
- *  4. If a div#toc exists — prepends an «Contents» h1 (with its own
+ *  4. If a div#toc exists — prepends an «On this page» h1 (with its own
  *     anchor) and builds a hierarchical ToC, preserving rich content
  *     (e.g. <code>, KaTeX spans) inside ToC links.
  */
@@ -111,8 +111,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const anchor = Object.assign(document.createElement('a'), {
             href: `#${id}`,
             className: 'heading-anchor',
-            textContent: '#',
+            // textContent: '#',
         });
+        anchor.innerHTML = '<i class="fa-solid fa-hashtag"></i>';
         anchor.setAttribute('aria-label', `Link to section "${text}"`);
         heading.appendChild(anchor);
 
@@ -124,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Flat ordered list of all processed headings — fed into the ToC builder
     const tocEntries = [];
 
-    document.querySelectorAll('article').forEach((container) => {
+    document.querySelectorAll('.content').forEach((container) => {
         container.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach((heading) => {
             const entry = processHeading(heading);
             tocEntries.push({ level: parseInt(heading.tagName[1], 10), ...entry });
@@ -145,9 +146,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const tocTitleAnchor = Object.assign(document.createElement('a'), {
         href: `#${tocTitleId}`,
         className: 'heading-anchor',
-        textContent: '#',
+        // textContent: '#',
     });
     tocTitleAnchor.setAttribute('aria-label', `Link to section "${TOC_TITLE_TEXT}"`);
+    tocTitleAnchor.innerHTML = '<i class="fa-solid fa-hashtag"></i>';
 
     const tocTitle = document.createElement('h1');
     tocTitle.id = tocTitleId;
