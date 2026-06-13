@@ -22,6 +22,7 @@
   --code-frame: 1px solid var(--frame-cl);
   --code-font: "JetBrains Mono", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --code-ligatures: none;
+  --code-color: #36454F;
   --meta-cl: #999;
 }
 
@@ -35,19 +36,20 @@
   --menu-link-cl: #56c392;
   --menu-link-hover-cl: #f89350;
   --menu-frame: 1px solid #333;
-  --dimmed-bg: rgba(0, 0, 0, 0.8);
+  --dimmed-bg: rgba(0, 0, 0, 0.7);
   --main-font: "Source Sans 3", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  --main-font-weight: 350;
-  --bold-font-weight: 600;
+  --main-font-weight: 400;
+  --bold-font-weight: 620;
   --bold-font-weight-katex: 550;
   --link-cl: #56c392;
   --link-hover-cl: #f89350;
   --code-font-weight: 290;
-  --bold-font-weight-code: 680;
+  --bold-font-weight-code: 710;
   --code-bg: #282828;
   --code-frame: 1px solid var(--frame-cl);
   --code-font: "JetBrains Mono", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --code-ligatures: none;
+  --code-color: #ccc;
   --meta-cl: #777;
 }
 
@@ -200,6 +202,9 @@ body {
   padding-top: 0.1rem;
   padding-bottom: 0.1rem;
 }
+.typography li p {
+  margin: 0.3rem 0;
+}
 .typography .post-list {
   margin: 1rem 0;
 }
@@ -242,8 +247,14 @@ body {
   text-decoration: none;
   color: var(--link-cl);
 }
+.typography a code, .typography a pre {
+  color: var(--link-cl);
+}
 @media (hover: hover) and (pointer: fine) {
   .typography a:hover {
+    color: var(--link-hover-cl);
+  }
+  .typography a:hover code, .typography a:hover pre {
     color: var(--link-hover-cl);
   }
 }
@@ -267,15 +278,20 @@ body {
 }
 .typography pre, .typography code {
   background-color: var(--code-bg);
+  color: var(--code-color);
   font-weight: var(--code-font-weight);
   font-family: var(--code-font);
   font-variant-ligatures: var(--code-ligatures);
   border: var(--code-frame);
   border-radius: 4px;
-  font-size: 0.87em;
+  font-size: 0.85em;
 }
 .typography code {
   padding: 0 0.2em;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
 }
 .typography pre {
   overflow-x: auto;
@@ -286,6 +302,7 @@ body {
   border: 0;
   border-radius: 0;
   font-size: 1em;
+  white-space: pre;
 }
 .typography .footer-menu {
   display: flex;
@@ -478,9 +495,9 @@ body {
   margin: 3rem auto 1rem auto;
   padding: 0 1rem;
 }
-.content > img {
+.content > img, .content li img {
   display: block;
-  margin: auto;
+  margin: 1rem auto;
   max-width: 100%;
   border-radius: 4px;
 }
