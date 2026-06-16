@@ -17,7 +17,7 @@
   --link-cl: #099;
   --link-hover-cl: #f47721;
   --code-font-weight: 400;
-  --bold-font-weight-code: 710;
+  --bold-font-weight-code: 720;
   --code-bg: #f7f7f7;
   --code-frame: 1px solid var(--frame-cl);
   --code-font: "JetBrains Mono", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -28,8 +28,8 @@
 
 [data-theme=dark] {
   --page-bg: #1c1c1c;
-  --text-cl: #bbb;
-  --header-cl: #ddd;
+  --text-cl: #aaa;
+  --header-cl: #ccc;
   --frame-cl: #333;
   --menu-bg: #282828;
   --menu-cl: #fff;
@@ -38,13 +38,13 @@
   --menu-frame: 1px solid #333;
   --dimmed-bg: rgba(0, 0, 0, 0.7);
   --main-font: "Source Sans 3", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  --main-font-weight: 400;
+  --main-font-weight: 390;
   --bold-font-weight: 620;
   --bold-font-weight-katex: 550;
   --link-cl: #56c392;
   --link-hover-cl: #f89350;
   --code-font-weight: 290;
-  --bold-font-weight-code: 710;
+  --bold-font-weight-code: 720;
   --code-bg: #282828;
   --code-frame: 1px solid var(--frame-cl);
   --code-font: "JetBrains Mono", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
