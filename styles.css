@@ -23,6 +23,7 @@
   --code-font: "JetBrains Mono", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --code-ligatures: none;
   --code-color: #36454F;
+  --code-color-header: var(--header-cl);
   --meta-cl: #999;
 }
 
@@ -50,6 +51,7 @@
   --code-font: "JetBrains Mono", monospace, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --code-ligatures: none;
   --code-color: #ccc;
+  --code-color-header: var(--header-cl);
   --meta-cl: #777;
 }
 
@@ -83,6 +85,9 @@ body {
 }
 .typography .title code, .typography h1 code, .typography h2 code, .typography h3 code, .typography h4 code, .typography h5 code, .typography h6 code, .typography strong code, .typography th code {
   font-weight: var(--bold-font-weight-code);
+}
+.typography h1 code, .typography h2 code, .typography h3 code, .typography h4 code, .typography h5 code, .typography h6 code {
+  color: var(--code-color-header);
 }
 .typography h1[id], .typography h2[id], .typography h3[id], .typography h4[id], .typography h5[id], .typography h6[id] {
   scroll-margin-top: 4rem;
