@@ -400,7 +400,7 @@ body {
 .topbar-wrapper .topbar #menu > *:last-child {
   padding-right: 1rem;
 }
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 560px) {
   .topbar-wrapper .topbar #menu {
     display: none;
   }
@@ -414,7 +414,7 @@ body {
 .topbar-wrapper .topbar #menu-buttons {
   display: none;
 }
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 560px) {
   .topbar-wrapper .topbar #menu-buttons {
     display: flex;
   }
@@ -438,7 +438,7 @@ body {
   opacity: 0;
   visibility: hidden;
 }
-@media (max-width: 500px) {
+@media (max-width: 560px) {
   #dropdown-menu.opened {
     opacity: 1;
     visibility: visible;
@@ -521,7 +521,7 @@ body {
   right: 0;
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 560px) {
   #dimmed.show {
     display: block;
     opacity: 1;
