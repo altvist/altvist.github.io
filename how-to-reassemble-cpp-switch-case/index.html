@@ -29,7 +29,7 @@ xchg rsi, [rsp]                 ; restore rsi from the stack, push the case addr
 ret                              ; jump to the case
 </code></pre><p>This sequence of instructions doesn&rsquo;t clobber any registers and, functionally, does exactly the same thing as the original <code>jmp</code>.</p><p>Is this a good solution? Well, it gets the job done, and (in my subjective opinion) it looks considerably more elegant than</p><pre tabindex=0><code>db 0xFF, 0x24, 0xC5
 dq switch_table - ($ + 4)
-</code></pre><p>Could something even better have been done? Probably. See the next section.</p><h1>The community solution</h1><p>Funny enough, after I&rsquo;d already settled on my little <code>push</code>/<code>lea</code>/<code>xchg</code>/<code>ret</code> trick and written most of this blog post, I went digging again and found that the NASM manual itself describes essentially the same problem—in the context of writing position-independent Win64 DLL code—and even offers its own fix:</p><pre tabindex=0><code>lea rbx, [rel dsptch]
+</code></pre><p>Could something even better have been done? Probably. See the next section.</p><h1>The community solution</h1><p>Funny enough, after I&rsquo;d already settled on my little <code>push</code>/<code>lea</code>/<code>xchg</code>/<code>ret</code> trick and written most of this blog post, I went digging again and found that the NASM manual itself <a href=https://www.nasm.us/xdoc/2.15.03rc8/html/nasmdoc8.html>describes essentially the same problem</a> — in the context of writing position-independent Win64 DLL code—and even offers its own fix:</p><pre tabindex=0><code>lea rbx, [rel dsptch]
 add rbx, QWORD [rbx + rax*8]
 jmp rbx
 ...
