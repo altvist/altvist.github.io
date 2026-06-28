@@ -9,7 +9,7 @@
   --menu-link-cl: #099;
   --menu-link-hover-cl: #f47721;
   --menu-frame: 0;
-  --menu-shadow: 0px 5px 5px #ddd;
+  --menu-shadow: 0px 5px 15px #ddd;
   --dimmed-bg: rgba(0, 0, 0, 0.3);
   --main-font: "Source Sans 3", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --main-font-weight: 400;
@@ -38,7 +38,7 @@
   --menu-link-cl: #56c392;
   --menu-link-hover-cl: #f89350;
   --menu-frame: 0;
-  --menu-shadow: 0px 5px 5px #111;
+  --menu-shadow: 0px 5px 15px #111;
   --dimmed-bg: rgba(0, 0, 0, 0.7);
   --main-font: "Source Sans 3", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --main-font-weight: 390;
