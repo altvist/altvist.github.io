@@ -489,7 +489,7 @@ body {
   }
 }
 #dropdown-menu .dropdown-menu-icons > * {
-  padding: 0.7rem 0.3rem 0.7rem 0.3rem;
+  padding: 0.7rem 0.3rem 1rem 0.3rem;
 }
 #dropdown-menu .dropdown-menu-icons > *:first-child {
   padding-left: 1rem;
