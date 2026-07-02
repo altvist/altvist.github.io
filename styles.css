@@ -467,7 +467,7 @@ body {
   border: var(--menu-frame);
 }
 #dropdown-menu > a:first-child {
-  padding-top: 0.7rem;
+  padding-top: 0.8rem;
 }
 #dropdown-menu > a {
   padding: 0.3rem 1rem;
