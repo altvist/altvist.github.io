@@ -4,6 +4,11 @@
   --text-cl: #36454F;
   --header-cl: #222;
   --frame-cl: #ddd;
+  --alert-warning: #ffc400;
+  --alert-tip: #099;
+  --alert-note: var(--alert-tip);
+  --alert-important: #d30000;
+  --alert-caution: var(--alert-important);
   --menu-bg: #fff;
   --menu-cl: #222;
   --menu-link-cl: #099;
@@ -33,6 +38,11 @@
   --text-cl: #aaa;
   --header-cl: #ccc;
   --frame-cl: #333;
+  --alert-warning: #ffc400;
+  --alert-tip: #099;
+  --alert-note: var(--alert-tip);
+  --alert-important: #d30000;
+  --alert-caution: var(--alert-important);
   --menu-bg: #1c1c1c;
   --menu-cl: #fff;
   --menu-link-cl: #56c392;
@@ -310,6 +320,21 @@ body {
   border-radius: 0;
   font-size: 1em;
   white-space: pre;
+}
+.typography blockquote {
+  padding: 0;
+  margin: 1rem 0;
+  border-left: 3px solid var(--alert-tip);
+  padding-left: 1rem;
+}
+.typography blockquote.alert-warning {
+  border-left: 3px solid var(--alert-warning);
+}
+.typography blockquote.alert-important, .typography blockquote.alert-caution {
+  border-left: 3px solid var(--alert-caution);
+}
+.typography blockquote.alert-tip, .typography blockquote.alert-note {
+  border-left: 3px solid var(--alert-note);
 }
 .typography .footer-menu {
   display: flex;
