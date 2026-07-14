@@ -39,9 +39,9 @@
   --header-cl: #ccc;
   --frame-cl: #333;
   --alert-warning: #ffc400;
-  --alert-tip: #099;
+  --alert-tip: #56c392;
   --alert-note: var(--alert-tip);
-  --alert-important: #d30000;
+  --alert-important: #ff3131;
   --alert-caution: var(--alert-important);
   --menu-bg: #1c1c1c;
   --menu-cl: #fff;
