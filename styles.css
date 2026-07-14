@@ -4,11 +4,11 @@
   --text-cl: #36454F;
   --header-cl: #222;
   --frame-cl: #ddd;
-  --alert-warning: #ffc400;
+  --alert-yellow: #ffc400;
   --alert-tip: #099;
-  --alert-note: var(--alert-tip);
+  --alert-green: var(--alert-tip);
   --alert-important: #d30000;
-  --alert-caution: var(--alert-important);
+  --alert-red: var(--alert-important);
   --menu-bg: #fff;
   --menu-cl: #222;
   --menu-link-cl: #099;
@@ -38,11 +38,11 @@
   --text-cl: #aaa;
   --header-cl: #ccc;
   --frame-cl: #333;
-  --alert-warning: #ffc400;
+  --alert-yellow: #ffc400;
   --alert-tip: #56c392;
-  --alert-note: var(--alert-tip);
+  --alert-green: var(--alert-tip);
   --alert-important: #ff3131;
-  --alert-caution: var(--alert-important);
+  --alert-red: var(--alert-important);
   --menu-bg: #1c1c1c;
   --menu-cl: #fff;
   --menu-link-cl: #56c392;
@@ -324,17 +324,14 @@ body {
 .typography blockquote {
   padding: 0;
   margin: 1rem 0;
-  border-left: 3px solid var(--alert-tip);
+  border-left: 3px solid var(--alert-green);
   padding-left: 1rem;
 }
-.typography blockquote.alert-warning {
-  border-left: 3px solid var(--alert-warning);
+.typography blockquote.alert-red {
+  border-left: 3px solid var(--alert-red);
 }
-.typography blockquote.alert-important, .typography blockquote.alert-caution {
-  border-left: 3px solid var(--alert-caution);
-}
-.typography blockquote.alert-tip, .typography blockquote.alert-note {
-  border-left: 3px solid var(--alert-note);
+.typography blockquote.alert-yellow {
+  border-left: 3px solid var(--alert-yellow);
 }
 .typography .footer-menu {
   display: flex;
