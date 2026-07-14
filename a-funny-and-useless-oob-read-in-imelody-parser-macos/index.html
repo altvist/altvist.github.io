@@ -24,11 +24,12 @@ END:IMELODY
 </code></pre><p>Among the extracted files, find</p><pre tabindex=0><code class=language-~ data-lang=~>./macos26.5.2-libs/System/Library/Frameworks/AudioToolbox.framework/Versions/A/AudioToolbox
 </code></pre><p>and open this file in any disassembler. I use <a href=https://binary.ninja/>Binary Ninja</a>, but <a href=http://ghidra.net/>Ghidra</a> or <a href=https://www.hopperapp.com/>Hopper</a> will also work. Then, using symbol navigation, find the <code>Sequence::ReadiMelodyFile</code> method and the loop inside it:</p><pre tabindex=0><code class=language-~ data-lang=~>int64_t Sequence::ReadiMelodyFile(TStream&amp; arg1, uint32_t arg2) + 1156:
 
+    @loop:
         ; look for the closing parenthesis &#39;)&#39;
         mov     x0, x19           ; start of the loop: x0 = this (the code uses a special reader object to read bytes)
         bl      sub_1943e12e0     ; call the reader: read the next byte into x0
         cmp     w0, #0x29         ; is it &#39;)&#39;?
-        b.ne    0x1943703e0       ; no! back to the start of the loop — read another byte!
+        b.ne    @loop             ; no! back to the start of the loop — read another byte!
 
         ...
 </code></pre><p>This loop starts executing after an opening parenthesis <code>'('</code> is encountered in the <code>MELODY</code> string. Its purpose is to find the matching closing parenthesis <code>')'</code>. Suppose our iMelody file looks like this:</p><pre tabindex=0><code>BEGIN:IMELODY
