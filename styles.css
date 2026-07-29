@@ -469,9 +469,6 @@ body {
     visibility: visible;
   }
 }
-#dropdown-menu {
-  transition: opacity 0.1s ease, visibility 0.1s ease;
-}
 #dropdown-menu, #dropdown-menu * {
   display: flex;
 }
@@ -555,20 +552,16 @@ body {
   }
 }
 
-body.frozen {
-  overflow: hidden;
-}
-body.frozen #dropdown-menu {
-  border: 0;
-}
-body.frozen .topbar-wrapper {
-  border: 0;
-  box-shadow: none;
-}
-
-@media screen and (min-width: 581px) {
+@media screen and (max-width: 580px) {
   body.frozen {
-    overflow: auto;
+    overflow: hidden;
+  }
+  body.frozen #dropdown-menu {
+    border: 0;
+  }
+  body.frozen .topbar-wrapper {
+    border: 0;
+    box-shadow: none;
   }
 }
 
