@@ -566,4 +566,10 @@ body.frozen .topbar-wrapper {
   box-shadow: none;
 }
 
+@media screen and (min-width: 581px) {
+  body.frozen {
+    overflow: auto;
+  }
+}
+
 /*# sourceMappingURL=styles.css.map */
