@@ -9,10 +9,8 @@
 &lt;/ul&gt;
 &lt;p&gt;Honestly, my experience could have been much better, but it is what it is — in this blog post, I mostly write about the things I did not like. And I compare Apple a little with other players in the vulnerability market.&lt;/p&gt;
 
- &lt;blockquote&gt;
- &lt;p&gt;![YELLOW]
-&lt;strong&gt;Disclaimer!&lt;/strong&gt; All of this is subjective and reflects only my own experience.&lt;/p&gt;
-
+ &lt;blockquote class="alert-yellow"&gt;
+ &lt;p&gt;&lt;strong&gt;Disclaimer!&lt;/strong&gt; All of this is subjective and reflects only my own experience.&lt;/p&gt;
  &lt;/blockquote&gt;</description></item><item><title>CVE-2026-64725: write-up and PoC</title><link>/cve-2026-64725/</link><pubDate>Tue, 28 Jul 2026 00:00:00 +0000</pubDate><guid>/cve-2026-64725/</guid><description>&lt;p&gt;In this blog post, we will take a detailed look at &lt;a href="https://support.apple.com/en-us/128066"&gt;CVE-2026-64725&lt;/a&gt;.&lt;/p&gt;</description></item><item><title>A funny and useless OOB read in the iMelody parser (macOS)</title><link>/a-funny-and-useless-oob-read-in-imelody-parser-macos/</link><pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate><guid>/a-funny-and-useless-oob-read-in-imelody-parser-macos/</guid><description>&lt;p&gt;Recently I discovered, almost by accident, that:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
